@@ -28,6 +28,7 @@
 #'   insertions/deletions in the documents.
 #' @param progress Display a progress bar and messages while computing the
 #'   alignment.
+#' @param tokenize_split Pattern used to split documents into words.
 #'
 #' @return A list with the class \code{textreuse_alignment}. This list contains
 #'   several elements: \itemize{ \item \code{a_edit} and \code{b_edit}:
@@ -69,7 +70,7 @@
 #'
 #' @export
 align_local <- function(a, b, match = 2L, mismatch = -1L, gap = -1L,
-                        edit_mark = "#", progress = interactive()) {
+                        edit_mark = "#", progress = interactive(), tokenize_split = boundary("word")) {
  assert_that(identical(class(a), class(b)))
  UseMethod("align_local", a)
 }
@@ -77,14 +78,16 @@ align_local <- function(a, b, match = 2L, mismatch = -1L, gap = -1L,
 #' @export
 align_local.TextReuseTextDocument <- function(a, b, match = 2L, mismatch = -1L,
                                               gap = -1L, edit_mark = "#",
-                                              progress = interactive()) {
+                                              progress = interactive(),
+                                              tokenize_split = boundary("word")) {
   align_local(content(a), content(b), match = match, mismatch = mismatch,
               gap = gap, edit_mark = edit_mark)
 }
 
 #' @export
 align_local.default <- function(a, b, match = 2L, mismatch = -1L, gap = -1L,
-                                edit_mark = "#", progress = interactive()) {
+                                edit_mark = "#", progress = interactive(),
+                                tokenize_split = boundary("word")) {
 
   assert_that(is.string(a),
               is.string(b),
@@ -109,8 +112,8 @@ align_local.default <- function(a, b, match = 2L, mismatch = -1L, gap = -1L,
   # Prepare the character vectors. Tokenize to words to compare word by word.
   # Use all lower case for the comparison, but use original capitalization in
   # the output.
-  a_orig <- tokenize_words(a, lowercase = FALSE)
-  b_orig <- tokenize_words(b, lowercase = FALSE)
+  a_orig <- tokenize_words(a, lowercase = FALSE, split = tokenize_split)
+  b_orig <- tokenize_words(b, lowercase = FALSE, split = tokenize_split)
   a <- str_to_lower(a_orig)
   b <- str_to_lower(b_orig)
 

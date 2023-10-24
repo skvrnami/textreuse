@@ -22,9 +22,9 @@ NULL
 
 #' @export
 #' @rdname tokenizers
-tokenize_words <- function(string, lowercase = TRUE) {
+tokenize_words <- function(string, lowercase = TRUE, split) {
   assert_that(assertthat::is.string(string))
-  out <- str_split(string, boundary("word"))[[1]]
+  out <- str_split(string, pattern = split)[[1]]
   if (lowercase) str_to_lower(out) else out
 }
 
